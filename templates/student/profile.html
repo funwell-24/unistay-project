@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - UniStay{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('student.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('student.profile') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-user"></i> Profile Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-user-edit"></i> Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="text-center mb-4">
+                            {% if current_user.profile_photo %}
+                                <img src="{{ current_user.profile_photo }}" 
+                                     class="rounded-circle mb-3" width="150" height="150" id="profilePreview" style="object-fit: cover;">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150" 
+                                     class="rounded-circle mb-3" width="150" height="150" id="profilePreview">
+                            {% endif %}
+                            <div>
+                                <label class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-camera"></i> Change Photo
+                                    <input type="file" name="profile_photo" style="display: none;" accept="image/*" onchange="previewImage(this)">
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-2">Upload a profile picture (JPG, PNG)</small>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="full_name" class="form-control" value="{{ current_user.full_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" value="{{ current_user.phone }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Member Since</label>
+                                <input type="text" class="form-control" value="{{ current_user.created_at.strftime('%B %d, %Y') if current_user.created_at else 'N/A' }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Bio (Optional)</label>
+                            <textarea name="bio" class="form-control" rows="3" placeholder="Tell us a little about yourself">{{ current_user.bio if current_user.bio else '' }}</textarea>
+                        </div>
+                        
+                        <hr>
+                        <h5>Change Password</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" name="current_password" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" name="new_password" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" name="confirm_password" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profilePreview').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+{% endblock %}

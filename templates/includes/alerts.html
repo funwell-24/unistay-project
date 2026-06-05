@@ -1,0 +1,117 @@
+<!-- templates/includes/alerts.html -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show shadow-sm border-0 rounded-3 mb-3" role="alert">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        {% if category == 'success' %}
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        {% elif category == 'danger' %}
+                            <i class="fas fa-exclamation-circle fa-2x"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle fa-2x"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1">
+                        {{ message }}
+                    </div>
+                    <div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- Toast Notifications for Real-time Alerts -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+        <div class="toast-header">
+            <i class="fas fa-bell me-2 text-primary"></i>
+            <strong class="me-auto">UniStay Notification</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            <!-- Dynamic message -->
+        </div>
+    </div>
+</div>
+
+<script>
+// Show toast notification
+function showToast(message, type = 'info') {
+    const toastEl = document.getElementById('liveToast');
+    const toastBody = document.getElementById('toastMessage');
+    const toastHeader = toastEl.querySelector('.toast-header');
+    
+    // Set icon based on type
+    let icon = 'fas fa-bell';
+    if (type === 'success') icon = 'fas fa-check-circle';
+    if (type === 'error') icon = 'fas fa-exclamation-circle';
+    if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+    
+    toastHeader.querySelector('i').className = `${icon} me-2 text-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'}`;
+    toastBody.textContent = message;
+    
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+}
+
+// Show SweetAlert confirmation
+function showConfirm(title, text, confirmText = 'Yes', cancelText = 'Cancel') {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#667eea',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: confirmText,
+        cancelButtonText: cancelText
+    });
+}
+
+// Show success alert
+function showSuccess(title, text) {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'success',
+        confirmButtonColor: '#667eea',
+        timer: 3000,
+        showConfirmButton: true
+    });
+}
+
+// Show error alert
+function showError(title, text) {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'error',
+        confirmButtonColor: '#667eea'
+    });
+}
+
+// Show loading alert
+function showLoading(title = 'Loading...') {
+    Swal.fire({
+        title: title,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+}
+
+// Close loading alert
+function closeLoading() {
+    Swal.close();
+}
+</script>

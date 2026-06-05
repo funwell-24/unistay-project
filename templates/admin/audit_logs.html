@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs - UniStay{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-history"></i> System Audit Logs</h4>
+                    <button class="btn btn-success btn-sm" onclick="exportLogs()">
+                        <i class="fas fa-download"></i> Export Logs
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Filters -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select id="logActionFilter" class="form-select">
+                                <option value="all">All Actions</option>
+                                <option value="login">Login</option>
+                                <option value="logout">Logout</option>
+                                <option value="create">Create</option>
+                                <option value="update">Update</option>
+                                <option value="delete">Delete</option>
+                                <option value="verify">Verify</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="logUserFilter" class="form-select">
+                                <option value="all">All Users</option>
+                                {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.full_name }} ({{ user.user_type }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="logStartDate" class="form-control" placeholder="Start Date">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="logEndDate" class="form-control" placeholder="End Date">
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="logsTable">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>User Type</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in audit_logs %}
+                                <tr>
+                                    <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td>{{ log.user_name }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if log.user_type == 'admin' else 'success' if log.user_type == 'landlord' else 'info' }}">
+                                            {{ log.user_type|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if log.action == 'login' else 'info' if log.action == 'create' else 'danger' if log.action == 'delete' else 'secondary' }}">
+                                            {{ log.action|title }}
+                                        </span>
+                                    </td>
+                                    <td>{{ log.details }}</td>
+                                    <td>{{ log.ip_address }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if pagination and pagination.pages > 1 %}
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            {{ pagination.links|safe }}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Filter functionality
+document.getElementById('logActionFilter').addEventListener('change', filterLogs);
+document.getElementById('logUserFilter').addEventListener('change', filterLogs);
+document.getElementById('logStartDate').addEventListener('change', filterLogs);
+document.getElementById('logEndDate').addEventListener('change', filterLogs);
+
+function filterLogs() {
+    const action = document.getElementById('logActionFilter').value;
+    const userId = document.getElementById('logUserFilter').value;
+    const startDate = document.getElementById('logStartDate').value;
+    const endDate = document.getElementById('logEndDate').value;
+    
+    const rows = document.querySelectorAll('#logsTable tbody tr');
+    rows.forEach(row => {
+        const rowAction = row.cells[3].innerText.toLowerCase();
+        const rowUser = row.cells[1].innerText;
+        const rowDate = row.cells[0].innerText.split(' ')[0];
+        
+        let show = true;
+        if (action !== 'all' && !rowAction.includes(action)) show = false;
+        if (userId !== 'all' && rowUser !== userId) show = false;
+        if (startDate && rowDate < startDate) show = false;
+        if (endDate && rowDate > endDate) show = false;
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+function exportLogs() {
+    window.location.href = '/admin/export-audit-logs?' + new URLSearchParams({
+        action: document.getElementById('logActionFilter').value,
+        user_id: document.getElementById('logUserFilter').value,
+        start_date: document.getElementById('logStartDate').value,
+        end_date: document.getElementById('logEndDate').value
+    });
+}
+</script>
+{% endblock %}

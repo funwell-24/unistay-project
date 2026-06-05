@@ -1,0 +1,148 @@
+
+{% extends "base.html" %}
+
+{% block title %}Landlord Dashboard - UniStay{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    {% if current_user.profile_photo %}
+                        <img src="{{ current_user.profile_photo }}" class="rounded-circle mb-3" width="100" height="100" alt="Profile">
+                    {% else %}
+                        <img src="https://via.placeholder.com/100" class="rounded-circle mb-3" width="100" height="100" alt="Profile">
+                    {% endif %}
+                    <h5>{{ current_user.full_name }}</h5>
+                    {% if current_user.is_verified %}
+                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> Verified Landlord</span>
+                    {% else %}
+                        <span class="badge bg-warning"><i class="fas fa-clock"></i> Pending Verification</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-3">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('landlord.dashboard') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('landlord.properties') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-building"></i> My Properties
+                    </a>
+                    <a href="{{ url_for('landlord.property_bookings') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-check"></i> Booking Requests
+                        {% if pending_bookings_count > 0 %}
+                            <span class="badge bg-danger float-end">{{ pending_bookings_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('landlord.messages') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-envelope"></i> Messages
+                    </a>
+                    <a href="{{ url_for('landlord.analytics') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </a>
+                    <a href="{{ url_for('landlord.subscription') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-credit-card"></i> Subscription
+                    </a>
+                    <a href="{{ url_for('landlord.profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-edit"></i> Profile Settings
+                    </a>
+                    <a href="{{ url_for('landlord.settings') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-cog"></i> Account Settings
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card shadow-sm mb-4 bg-success text-white">
+                <div class="card-body">
+                    <h3>Welcome back, {{ current_user.full_name.split()[0] if current_user.full_name else 'Landlord' }}! 🏠</h3>
+                    <p class="mb-0">Manage your properties and connect with students.</p>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-muted">Total Properties</h6>
+                            <h3>{{ properties_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-muted">Available Units</h6>
+                            <h3>{{ available_units }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-muted">Pending Bookings</h6>
+                            <h3>{{ pending_bookings_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-muted">Monthly Earnings</h6>
+                            <h3>KES 0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Bookings -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Recent Booking Requests</h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_bookings %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Property</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in pending_bookings %}
+                                    <tr>
+                                        <td>{{ booking.student_name }}</td>
+                                        <td>{{ booking.title }}</td>
+                                        <td>{{ booking.created_at.strftime('%Y-%m-%d') if booking.created_at else 'N/A' }}</td>
+                                        <td><span class="badge bg-warning">Pending</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                            <p>No pending booking requests</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

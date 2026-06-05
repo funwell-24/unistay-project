@@ -1,0 +1,221 @@
+
+{% extends "base.html" %}
+
+{% block title %}Platform Settings - UniStay{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-cog"></i> Platform Settings</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#general">General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#email">Email Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#payment">Payment Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#security">Security</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <!-- General Settings -->
+                        <div class="tab-pane fade show active" id="general">
+                            <form method="POST" action="{{ url_for('admin.update_general_settings') }}">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Platform Name</label>
+                                            <input type="text" name="platform_name" class="form-control" value="{{ settings.platform_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Platform Email</label>
+                                            <input type="email" name="platform_email" class="form-control" value="{{ settings.platform_email }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Phone Number</label>
+                                            <input type="text" name="phone" class="form-control" value="{{ settings.phone }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Address</label>
+                                            <input type="text" name="address" class="form-control" value="{{ settings.address }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea name="description" class="form-control" rows="3">{{ settings.description }}</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save General Settings</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Email Settings -->
+                        <div class="tab-pane fade" id="email">
+                            <form method="POST" action="{{ url_for('admin.update_email_settings') }}">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">SMTP Server</label>
+                                            <input type="text" name="smtp_server" class="form-control" value="{{ email_settings.smtp_server }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">SMTP Port</label>
+                                            <input type="number" name="smtp_port" class="form-control" value="{{ email_settings.smtp_port }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Encryption</label>
+                                            <select name="smtp_encryption" class="form-select">
+                                                <option value="tls" {% if email_settings.smtp_encryption == 'tls' %}selected{% endif %}>TLS</option>
+                                                <option value="ssl" {% if email_settings.smtp_encryption == 'ssl' %}selected{% endif %}>SSL</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">SMTP Username</label>
+                                            <input type="text" name="smtp_username" class="form-control" value="{{ email_settings.smtp_username }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">SMTP Password</label>
+                                            <input type="password" name="smtp_password" class="form-control" value="{{ email_settings.smtp_password }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Email Settings</button>
+                                <button type="button" class="btn btn-info" onclick="testEmail()">Test Email</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Payment Settings -->
+                        <div class="tab-pane fade" id="payment">
+                            <form method="POST" action="{{ url_for('admin.update_payment_settings') }}">
+                                <h5>M-PESA Settings</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Consumer Key</label>
+                                            <input type="text" name="mpesa_consumer_key" class="form-control" value="{{ payment_settings.mpesa_consumer_key }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Consumer Secret</label>
+                                            <input type="password" name="mpesa_consumer_secret" class="form-control" value="{{ payment_settings.mpesa_consumer_secret }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Shortcode</label>
+                                            <input type="text" name="mpesa_shortcode" class="form-control" value="{{ payment_settings.mpesa_shortcode }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Passkey</label>
+                                            <input type="password" name="mpesa_passkey" class="form-control" value="{{ payment_settings.mpesa_passkey }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h5 class="mt-4">Card Payment Settings</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Stripe Publishable Key</label>
+                                            <input type="text" name="stripe_publishable_key" class="form-control" value="{{ payment_settings.stripe_publishable_key }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Stripe Secret Key</label>
+                                            <input type="password" name="stripe_secret_key" class="form-control" value="{{ payment_settings.stripe_secret_key }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Payment Settings</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Security Settings -->
+                        <div class="tab-pane fade" id="security">
+                            <form method="POST" action="{{ url_for('admin.update_security_settings') }}">
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" name="require_email_verification" class="form-check-input" 
+                                               {% if security_settings.require_email_verification %}checked{% endif %}>
+                                        <label class="form-check-label">Require Email Verification for New Users</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" name="require_2fa_admin" class="form-check-input"
+                                               {% if security_settings.require_2fa_admin %}checked{% endif %}>
+                                        <label class="form-check-label">Require 2FA for Admin Accounts</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Session Timeout (minutes)</label>
+                                            <input type="number" name="session_timeout" class="form-control" value="{{ security_settings.session_timeout }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Max Login Attempts</label>
+                                            <input type="number" name="max_login_attempts" class="form-control" value="{{ security_settings.max_login_attempts }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Security Settings</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function testEmail() {
+    fetch('/admin/test-email', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    });
+}
+</script>
+{% endblock %}

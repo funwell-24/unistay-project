@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Requests - UniStay{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    {% if current_user.profile_photo %}
+                        <img src="{{ current_user.profile_photo }}" class="rounded-circle mb-3" width="100" height="100" alt="Profile">
+                    {% else %}
+                        <img src="https://via.placeholder.com/100" class="rounded-circle mb-3" width="100" height="100" alt="Profile">
+                    {% endif %}
+                    <h5>{{ current_user.full_name }}</h5>
+                    {% if current_user.is_verified %}
+                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> Verified</span>
+                    {% else %}
+                        <span class="badge bg-warning"><i class="fas fa-clock"></i> Pending</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-3">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('landlord.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('landlord.properties') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-building"></i> My Properties
+                    </a>
+                    <a href="{{ url_for('landlord.property_bookings') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-calendar-check"></i> Booking Requests
+                    </a>
+                    <a href="{{ url_for('landlord.messages') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-envelope"></i> Messages
+                    </a>
+                    <a href="{{ url_for('landlord.analytics') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </a>
+                    <a href="{{ url_for('landlord.subscription') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-credit-card"></i> Subscription
+                    </a>
+                    <a href="{{ url_for('landlord.profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-edit"></i> Profile
+                    </a>
+                    <a href="{{ url_for('landlord.settings') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-calendar-check"></i> Booking Requests</h4>
+                </div>
+                <div class="card-body">
+                    {% if bookings and bookings|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Student Info</th>
+                                        <th>Property</th>
+                                        <th>Booking Date</th>
+                                        <th>Move In Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in bookings %}
+                                    <tr>
+                                        <td>#{{ booking.id }}</td>
+                                        <td>
+                                            <strong>{{ booking.student_name }}</strong><br>
+                                            <small class="text-muted">{{ booking.student_email }}</small><br>
+                                            <small><i class="fas fa-phone"></i> {{ booking.student_phone }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ booking.title }}</strong><br>
+                                            <small class="text-muted">Property ID: {{ booking.property_id }}</small>
+                                        </td>
+                                        <td>{{ booking.booking_date.strftime('%Y-%m-%d') if booking.booking_date else 'N/A' }}</td>
+                                        <td>{{ booking.move_in_date.strftime('%Y-%m-%d') if booking.move_in_date else 'Not set' }}</td>
+                                        <td>
+                                            {% if booking.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif booking.status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elif booking.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% elif booking.status == 'cancelled' %}
+                                                <span class="badge bg-secondary">Cancelled</span>
+                                            {% else %}
+                                                <span class="badge bg-info">{{ booking.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if booking.status == 'pending' %}
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('landlord.approve_booking', booking_id=booking.id) }}" 
+                                                       class="btn btn-success"
+                                                       onclick="return confirm('Approve this booking?')">
+                                                        <i class="fas fa-check"></i> Approve
+                                                    </a>
+                                                    <a href="{{ url_for('landlord.reject_booking', booking_id=booking.id) }}" 
+                                                       class="btn btn-danger"
+                                                       onclick="return confirm('Reject this booking?')">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-info mt-1" onclick="viewMessage({{ booking.id }})">
+                                                <i class="fas fa-envelope"></i> View Message
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-check fa-4x text-muted mb-3"></i>
+                            <h4>No booking requests</h4>
+                            <p class="text-muted">When students request to book your properties, they will appear here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Student Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="messageContent">
+                Loading...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewMessage(bookingId) {
+    fetch(`/api/booking-message/${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('messageContent').innerHTML = `
+                <p><strong>From:</strong> ${data.student_name}</p>
+                <p><strong>Email:</strong> ${data.student_email}</p>
+                <p><strong>Phone:</strong> ${data.student_phone}</p>
+                <hr>
+                <p><strong>Message:</strong></p>
+                <p class="p-3 bg-light rounded">${data.message || 'No message provided'}</p>
+                <hr>
+                <p><strong>Preferred Move-in Date:</strong> ${data.move_in_date || 'Not specified'}</p>
+            `;
+            new bootstrap.Modal(document.getElementById('messageModal')).show();
+        })
+        .catch(error => {
+            document.getElementById('messageContent').innerHTML = '<p class="text-danger">Error loading message</p>';
+        });
+}
+</script>
+{% endblock %}

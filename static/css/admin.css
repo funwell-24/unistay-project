@@ -1,0 +1,168 @@
+/* static/css/admin.css */
+/* Admin Dashboard Specific Styles */
+
+/* Admin Sidebar */
+.admin-sidebar {
+    background: white;
+    min-height: 100vh;
+    border-radius: 0;
+}
+
+.admin-sidebar .nav-link {
+    color: var(--gray-700);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    margin: 0.25rem 0;
+    transition: var(--transition);
+}
+
+.admin-sidebar .nav-link:hover {
+    background: var(--gray-100);
+    color: var(--primary-color);
+}
+
+.admin-sidebar .nav-link.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.admin-sidebar .nav-link i {
+    width: 25px;
+    margin-right: 10px;
+}
+
+/* Admin Stats Cards */
+.admin-stat-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+    border-left: 4px solid;
+}
+
+.admin-stat-card.primary {
+    border-left-color: var(--primary-color);
+}
+
+.admin-stat-card.success {
+    border-left-color: var(--success-color);
+}
+
+.admin-stat-card.warning {
+    border-left-color: var(--warning-color);
+}
+
+.admin-stat-card.danger {
+    border-left-color: var(--danger-color);
+}
+
+.admin-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Admin Tables */
+.admin-table {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.admin-table .table-header {
+    background: var(--gray-100);
+    padding: 1rem;
+    font-weight: 600;
+}
+
+/* Verification Documents */
+.verification-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.document-preview {
+    max-width: 200px;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin: 0.5rem;
+}
+
+/* Analytics Dashboard */
+.analytics-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+}
+
+/* User Management */
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-status {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.user-status.active {
+    background: var(--success-color);
+}
+
+.user-status.inactive {
+    background: var(--danger-color);
+}
+
+/* Audit Logs */
+.log-entry {
+    font-family: monospace;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border-left: 3px solid;
+    margin-bottom: 0.5rem;
+    background: var(--gray-100);
+}
+
+.log-entry.info {
+    border-left-color: var(--info-color);
+}
+
+.log-entry.warning {
+    border-left-color: var(--warning-color);
+}
+
+.log-entry.error {
+    border-left-color: var(--danger-color);
+}
+
+/* Admin Dashboard Responsive */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        min-height: auto;
+        margin-bottom: 1rem;
+    }
+    
+    .admin-stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .verification-card {
+        padding: 1rem;
+    }
+}

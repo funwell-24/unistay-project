@@ -1,0 +1,85 @@
+<!-- templates/includes/sidebar_landlord.html -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body text-center">
+        <img src="{{ current_user.profile_photo if current_user.profile_photo else 'https://via.placeholder.com/100' }}" 
+             class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;" alt="Profile">
+        <h5>{{ current_user.full_name }}</h5>
+        <p class="text-muted small">
+            <i class="fas fa-envelope"></i> {{ current_user.email }}<br>
+            <i class="fas fa-phone"></i> {{ current_user.phone }}
+        </p>
+        {% if current_user.is_verified %}
+            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Verified Landlord</span>
+        {% else %}
+            <span class="badge bg-warning"><i class="fas fa-clock"></i> Pending Verification</span>
+        {% endif %}
+    </div>
+    <div class="card-footer bg-white">
+        <a href="{{ url_for('landlord.add_property') }}" class="btn btn-primary btn-sm w-100">
+            <i class="fas fa-plus-circle"></i> Add New Property
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="list-group list-group-flush">
+        <a href="{{ url_for('landlord.dashboard') }}" class="list-group-item list-group-item-action {% if active_page == 'dashboard' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+        <a href="{{ url_for('landlord.properties') }}" class="list-group-item list-group-item-action {% if active_page == 'properties' %}active{% endif %}">
+            <i class="fas fa-building me-2"></i> My Properties
+            <span class="badge bg-primary float-end">{{ properties_count }}</span>
+        </a>
+        <a href="{{ url_for('landlord.property_bookings') }}" class="list-group-item list-group-item-action {% if active_page == 'bookings' %}active{% endif %}">
+            <i class="fas fa-calendar-check me-2"></i> Booking Requests
+            {% if pending_bookings > 0 %}
+                <span class="badge bg-warning float-end">{{ pending_bookings }}</span>
+            {% endif %}
+        </a>
+        <a href="{{ url_for('landlord.messages') }}" class="list-group-item list-group-item-action {% if active_page == 'messages' %}active{% endif %}">
+            <i class="fas fa-envelope me-2"></i> Messages
+            {% if unread_messages > 0 %}
+                <span class="badge bg-info float-end">{{ unread_messages }}</span>
+            {% endif %}
+        </a>
+        <a href="{{ url_for('landlord.analytics') }}" class="list-group-item list-group-item-action {% if active_page == 'analytics' %}active{% endif %}">
+            <i class="fas fa-chart-line me-2"></i> Analytics
+        </a>
+        <a href="{{ url_for('landlord.subscription') }}" class="list-group-item list-group-item-action {% if active_page == 'subscription' %}active{% endif %}">
+            <i class="fas fa-credit-card me-2"></i> Subscription
+            {% if current_plan != 'free' %}
+                <span class="badge bg-success float-end">{{ current_plan|title }}</span>
+            {% endif %}
+        </a>
+        <a href="{{ url_for('landlord.profile') }}" class="list-group-item list-group-item-action {% if active_page == 'profile' %}active{% endif %}">
+            <i class="fas fa-user-edit me-2"></i> Profile Settings
+        </a>
+        <a href="{{ url_for('landlord.settings') }}" class="list-group-item list-group-item-action {% if active_page == 'settings' %}active{% endif %}">
+            <i class="fas fa-cog me-2"></i> Account Settings
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-white">
+        <h6 class="mb-0"><i class="fas fa-chart-simple me-2"></i> Quick Stats</h6>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <small class="text-muted">Total Views This Month</small>
+            <h5 class="mb-0">{{ total_views }}</h5>
+        </div>
+        <div class="mb-3">
+            <small class="text-muted">Total Inquiries</small>
+            <h5 class="mb-0">{{ total_inquiries }}</h5>
+        </div>
+        <div class="mb-0">
+            <small class="text-muted">Conversion Rate</small>
+            <h5 class="mb-0">{{ conversion_rate }}%</h5>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,165 @@
+<!-- templates/includes/navbar.html -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <!-- Brand Logo -->
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="fas fa-home me-2"></i>
+            <strong>UniStay</strong>
+        </a>
+        
+        <!-- Mobile Toggle Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Navigation Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <!-- Public Links -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('search') }}">
+                        <i class="fas fa-search"></i> Search
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('about') }}">
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('contact') }}">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a>
+                </li>
+                
+                <!-- Authenticated User Links -->
+                {% if current_user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <img src="{{ current_user.profile_photo if current_user.profile_photo else 'https://via.placeholder.com/30' }}" 
+                                 class="rounded-circle me-1" width="30" height="30" style="object-fit: cover;">
+                            {{ current_user.full_name.split()[0] }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <!-- Student Dashboard -->
+                            {% if current_user.user_type == 'student' %}
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('student.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('student.saved_properties') }}">
+                                    <i class="fas fa-heart"></i> Saved Properties
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('student.bookings') }}">
+                                    <i class="fas fa-calendar-check"></i> My Bookings
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('student.messages') }}">
+                                    <i class="fas fa-envelope"></i> Messages
+                                    {% if unread_messages > 0 %}
+                                        <span class="badge bg-danger">{{ unread_messages }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            
+                            <!-- Landlord Dashboard -->
+                            {% elif current_user.user_type == 'landlord' %}
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('landlord.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('landlord.properties') }}">
+                                    <i class="fas fa-building"></i> My Properties
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('landlord.add_property') }}">
+                                    <i class="fas fa-plus-circle"></i> Add Property
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('landlord.property_bookings') }}">
+                                    <i class="fas fa-calendar-check"></i> Booking Requests
+                                </a>
+                            </li>
+                            
+                            <!-- Admin Dashboard -->
+                            {% elif current_user.user_type == 'admin' %}
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i> Admin Panel
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('admin.users') }}">
+                                    <i class="fas fa-users"></i> Manage Users
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('admin.verifications') }}">
+                                    <i class="fas fa-check-double"></i> Verifications
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('student.profile') if current_user.user_type == 'student' else url_for('landlord.profile') }}">
+                                    <i class="fas fa-user-circle"></i> Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                <!-- Guest Links -->
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-light text-primary px-3 mx-1" href="{{ url_for('auth.login') }}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light px-3 mx-1" href="{{ url_for('auth.register') }}">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Notification Bell -->
+{% if current_user and unread_notifications > 0 %}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1000;">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="toast-header">
+            <i class="fas fa-bell me-2 text-primary"></i>
+            <strong class="me-auto">UniStay Notifications</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            You have <strong>{{ unread_notifications }}</strong> unread notification(s)
+            <a href="#" class="btn btn-sm btn-primary mt-2 w-100">View Notifications</a>
+        </div>
+    </div>
+</div>
+{% endif %}

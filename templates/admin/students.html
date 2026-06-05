@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Students - UniStay{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-user-graduate"></i> Students Management</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <input type="text" id="searchStudent" class="form-control" placeholder="Search students...">
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-success" onclick="exportData()">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="studentsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Bookings</th>
+                                    <th>Reviews</th>
+                                    <th>Joined</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr>
+                                    <td>{{ student.id }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ student.profile_photo if student.profile_photo else 'https://via.placeholder.com/40' }}" 
+                                                 class="rounded-circle me-2" width="30" height="30">
+                                            {{ student.full_name }}
+                                        </div>
+                                    </td>
+                                    <td>{{ student.email }}</td>
+                                    <td>{{ student.phone }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ student.bookings_count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">{{ student.reviews_count }}</span>
+                                    </td>
+                                    <td>{{ student.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if student.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Suspended</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" onclick="viewStudent({{ student.id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-warning" onclick="viewBookings({{ student.id }})">
+                                                <i class="fas fa-calendar"></i>
+                                            </button>
+                                            {% if student.is_active %}
+                                                <button class="btn btn-danger" onclick="suspendStudent({{ student.id }})">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            {% else %}
+                                                <button class="btn btn-success" onclick="activateStudent({{ student.id }})">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('searchStudent').addEventListener('keyup', function() {
+    const search = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#studentsTable tbody tr');
+    rows.forEach(row => {
+        const name = row.cells[1].innerText.toLowerCase();
+        const email = row.cells[2].innerText.toLowerCase();
+        row.style.display = name.includes(search) || email.includes(search) ? '' : 'none';
+    });
+});
+
+function viewStudent(studentId) {
+    window.location.href = `/admin/student/${studentId}`;
+}
+
+function viewBookings(studentId) {
+    window.location.href = `/admin/student-bookings/${studentId}`;
+}
+
+function suspendStudent(studentId) {
+    if (confirm('Are you sure you want to suspend this student?')) {
+        fetch(`/admin/suspend-student/${studentId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) location.reload();
+        });
+    }
+}
+
+function activateStudent(studentId) {
+    fetch(`/admin/activate-student/${studentId}`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) location.reload();
+    });
+}
+
+function exportData() {
+    window.location.href = '/admin/export-students';
+}
+</script>
+{% endblock %}

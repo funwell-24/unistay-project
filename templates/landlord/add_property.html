@@ -1,0 +1,363 @@
+
+{% extends "base.html" %}
+
+{% block title %}Add New Property - UniStay{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> Add New Property</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Basic Information -->
+                        <h5 class="mb-3">Basic Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Property Title *</label>
+                                <input type="text" name="title" class="form-control" required 
+                                       placeholder="e.g., Modern Bedsitter Near University">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Property Type *</label>
+                                <select name="property_type" class="form-select" required>
+                                    <option value="bedsitter">Bedsitter</option>
+                                    <option value="single_room">Single Room</option>
+                                    <option value="double_room">Double Room</option>
+                                    <option value="one_bedroom">One Bedroom</option>
+                                    <option value="two_bedroom">Two Bedroom</option>
+                                    <option value="shared_apartment">Shared Apartment</option>
+                                    <option value="hostel_room">Hostel Room</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Number of Units *</label>
+                                <input type="number" name="available_units" class="form-control" value="1" min="1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Description *</label>
+                            <textarea name="description" class="form-control" rows="4" required 
+                                      placeholder="Describe the property, amenities, nearby facilities..."></textarea>
+                        </div>
+                        
+                        <!-- Location Information -->
+                        <h5 class="mb-3 mt-4">Location Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Area/Estate *</label>
+                                <input type="text" name="location_area" class="form-control" required 
+                                       placeholder="e.g., Kileleshwa, Westlands">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Street/Road</label>
+                                <input type="text" name="location_street" class="form-control" 
+                                       placeholder="e.g., Riara Road">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Distance from Campus *</label>
+                                <select name="distance" class="form-select" required>
+                                    <option value="200m">200 meters</option>
+                                    <option value="500m">500 meters</option>
+                                    <option value="1km">1 kilometer</option>
+                                    <option value="2km">2 kilometers</option>
+                                    <option value="3km+">More than 3 kilometers</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nearby Landmarks</label>
+                                <input type="text" name="nearby_landmarks" class="form-control" 
+                                       placeholder="e.g., Near Main Gate, Shopping Centre">
+                            </div>
+                        </div>
+                        
+                        <!-- Pricing Information -->
+                        <h5 class="mb-3 mt-4">Pricing Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Monthly Rent (KES) *</label>
+                                <input type="number" name="monthly_rent" class="form-control" required 
+                                       placeholder="e.g., 10000">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Deposit Amount (KES)</label>
+                                <input type="number" name="deposit" class="form-control" 
+                                       placeholder="e.g., 10000">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Booking Fee (KES)</label>
+                                <input type="number" name="booking_fee" class="form-control" 
+                                       placeholder="e.g., 500">
+                            </div>
+                        </div>
+                        
+                        <!-- Utilities Charges -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Water Charges</label>
+                                <select name="water_charges" class="form-select">
+                                    <option value="included">Included in Rent</option>
+                                    <option value="separate">Separate Payment</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Electricity Charges</label>
+                                <select name="electricity_charges" class="form-select">
+                                    <option value="included">Included in Rent</option>
+                                    <option value="separate">Separate Payment</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Amenities & Features -->
+                        <h5 class="mb-3 mt-4">Amenities & Features</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <h6>Security</h6>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_security_guards" class="form-check-input">
+                                    <label class="form-check-label">Security Guards</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_cctv" class="form-check-input">
+                                    <label class="form-check-label">CCTV Cameras</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_electric_fence" class="form-check-input">
+                                    <label class="form-check-label">Electric Fence</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_gated_compound" class="form-check-input">
+                                    <label class="form-check-label">Gated Compound</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Utilities</h6>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_water" class="form-check-input" checked>
+                                    <label class="form-check-label">Water Available</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_borehole_water" class="form-check-input">
+                                    <label class="form-check-label">Borehole Water</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_electricity" class="form-check-input" checked>
+                                    <label class="form-check-label">Electricity</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_backup_generator" class="form-check-input">
+                                    <label class="form-check-label">Backup Generator</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_wifi" class="form-check-input">
+                                    <label class="form-check-label">WiFi Available</label>
+                                </div>
+                                <div class="mt-2">
+                                    <label class="form-label">WiFi Price (if separate)</label>
+                                    <input type="number" name="wifi_price" class="form-control" placeholder="e.g., 1000">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Parking</h6>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_car_parking" class="form-check-input">
+                                    <label class="form-check-label">Car Parking</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_motorcycle_parking" class="form-check-input">
+                                    <label class="form-check-label">Motorcycle Parking</label>
+                                </div>
+                                <div class="mt-2">
+                                    <label class="form-label">Parking Fee (if separate)</label>
+                                    <input type="number" name="parking_fee" class="form-control" placeholder="e.g., 500">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <h6>Comfort</h6>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_balcony" class="form-check-input">
+                                    <label class="form-check-label">Balcony</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_wardrobes" class="form-check-input" checked>
+                                    <label class="form-check-label">Wardrobes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_kitchen_cabinets" class="form-check-input">
+                                    <label class="form-check-label">Kitchen Cabinets</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_hot_shower" class="form-check-input">
+                                    <label class="form-check-label">Hot Shower</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_laundry_area" class="form-check-input">
+                                    <label class="form-check-label">Laundry Area</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_furniture" class="form-check-input">
+                                    <label class="form-check-label">Furnished</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Additional</h6>
+                                <div class="form-check">
+                                    <input type="checkbox" name="pet_friendly" class="form-check-input">
+                                    <label class="form-check-label">Pet Friendly</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_swimming_pool" class="form-check-input">
+                                    <label class="form-check-label">Swimming Pool</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="has_gym" class="form-check-input">
+                                    <label class="form-check-label">Gym</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- House Rules -->
+                        <h5 class="mb-3 mt-4">House Rules</h5>
+                        <div class="mb-3">
+                            <div id="rulesContainer">
+                                <div class="input-group mb-2">
+                                    <input type="text" name="rules" class="form-control" placeholder="e.g., No loud music after 10 PM">
+                                    <button type="button" class="btn btn-outline-danger remove-rule">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="addRule">
+                                <i class="fas fa-plus"></i> Add Rule
+                            </button>
+                        </div>
+                        
+                        <!-- Contact Information -->
+                        <h5 class="mb-3 mt-4">Contact Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Landlord Name *</label>
+                                <input type="text" name="contact_name" class="form-control" value="{{ current_user.full_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" name="contact_phone" class="form-control" value="{{ current_user.phone }}" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">WhatsApp Number</label>
+                                <input type="tel" name="whatsapp" class="form-control" value="{{ current_user.phone }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Contact Method</label>
+                                <select name="preferred_contact" class="form-select">
+                                    <option value="phone">Phone Call</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="email">Email</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Images -->
+                        <h5 class="mb-3 mt-4">Property Images & Media</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Upload Images</label>
+                            <input type="file" name="images" class="form-control" multiple accept="image/jpeg,image/png,image/jpg,image/gif">
+                            <small class="text-muted">You can select multiple images. First image will be the cover. Supported formats: JPG, PNG, GIF</small>
+                        </div>
+                        <div id="imagePreview" class="row mt-2"></div>
+                        
+                        <!-- Verification Section (Read-only from user profile) -->
+                        <h5 class="mb-3 mt-4">Verification</h5>
+                        <div class="alert alert-info">
+                            <p><strong>National ID:</strong> {{ current_user.national_id or 'Not provided' }}</p>
+                            <p><strong>KRA PIN:</strong> {{ current_user.kra_pin or 'Not provided' }}</p>
+                            <p><strong>Verification Status:</strong> 
+                                {% if current_user.is_verified %}
+                                    <span class="badge bg-success">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending Verification</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-info-circle"></i> 
+                            <strong>Note:</strong> Your property will be reviewed by our admin team before being published. This ensures quality and prevents scams.
+                        </div>
+                        
+                        <hr>
+                        <div class="text-end">
+                            <a href="{{ url_for('landlord.properties') }}" class="btn btn-secondary btn-lg">Cancel</a>
+                            <button type="submit" class="btn btn-primary btn-lg">List Property</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add rule dynamically
+document.getElementById('addRule').addEventListener('click', function() {
+    const container = document.getElementById('rulesContainer');
+    const newRule = document.createElement('div');
+    newRule.className = 'input-group mb-2';
+    newRule.innerHTML = `
+        <input type="text" name="rules" class="form-control" placeholder="Enter house rule">
+        <button type="button" class="btn btn-outline-danger remove-rule">Remove</button>
+    `;
+    container.appendChild(newRule);
+    
+    // Add remove event to new button
+    newRule.querySelector('.remove-rule').addEventListener('click', function() {
+        newRule.remove();
+    });
+});
+
+// Add remove event to existing remove buttons
+document.querySelectorAll('.remove-rule').forEach(btn => {
+    btn.addEventListener('click', function() {
+        this.closest('.input-group').remove();
+    });
+});
+
+// Image preview functionality
+document.querySelector('input[name="images"]').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('imagePreview');
+    previewContainer.innerHTML = '';
+    
+    if (this.files) {
+        Array.from(this.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const col = document.createElement('div');
+                col.className = 'col-md-3 mb-2';
+                col.innerHTML = `
+                    <div class="position-relative">
+                        <img src="${e.target.result}" class="img-fluid rounded" style="height: 100px; object-fit: cover; width: 100%;">
+                        <span class="badge bg-primary position-absolute top-0 start-0">${index === 0 ? 'Cover' : ''}</span>
+                    </div>
+                `;
+                previewContainer.appendChild(col);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+});
+</script>
+{% endblock %}

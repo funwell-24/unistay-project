@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Landlord Profile - UniStay{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('landlord.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('landlord.profile') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-user"></i> Profile Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-user-edit"></i> Profile Settings</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="text-center mb-4">
+                            <img src="{{ current_user.profile_photo if current_user.profile_photo else 'https://via.placeholder.com/150' }}" 
+                                 class="rounded-circle mb-3" width="150" height="150" id="profilePreview">
+                            <div>
+                                <label class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-camera"></i> Change Photo
+                                    <input type="file" name="profile_photo" style="display: none;" accept="image/*" onchange="previewImage(this)">
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="full_name" class="form-control" value="{{ current_user.full_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" value="{{ current_user.phone }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">National ID</label>
+                                <input type="text" class="form-control" value="{{ current_user.national_id or 'Not provided' }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">KRA PIN</label>
+                                <input type="text" class="form-control" value="{{ current_user.kra_pin or 'Not provided' }}" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Verification Status</label>
+                                {% if current_user.is_verified %}
+                                    <span class="badge bg-success d-block p-2">✓ Verified Landlord</span>
+                                {% else %}
+                                    <span class="badge bg-warning d-block p-2">⏳ Pending Verification</span>
+                                    <a href="{{ url_for('auth.landlord_verification') }}" class="btn btn-sm btn-primary mt-2">
+                                        Submit Verification Documents
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <h5>Change Password</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" name="current_password" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" name="new_password" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" name="confirm_password" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profilePreview').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+{% endblock %}

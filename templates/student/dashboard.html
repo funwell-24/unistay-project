@@ -1,0 +1,218 @@
+
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - UniStay{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    {% if current_user.profile_photo and current_user.profile_photo != '' %}
+                        <img src="{{ current_user.profile_photo }}" class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle mb-3 d-flex align-items-center justify-content-center mx-auto bg-primary text-white" style="width: 100px; height: 100px;">
+                            <i class="fas fa-user fa-3x"></i>
+                        </div>
+                    {% endif %}
+                    <h5>{{ current_user.full_name }}</h5>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-envelope"></i> {{ current_user.email }}
+                    </p>
+                    <p class="text-muted">
+                        <i class="fas fa-phone"></i> {{ current_user.phone }}
+                    </p>
+                    <hr>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('student.profile') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-user-edit"></i> Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-3">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('student.dashboard') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('student.saved_properties') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart"></i> Saved Properties
+                        <span class="badge bg-danger float-end">{{ saved_count }}</span>
+                    </a>
+                    <a href="{{ url_for('student.bookings') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-check"></i> My Bookings
+                        <span class="badge bg-warning float-end">{{ bookings_count }}</span>
+                    </a>
+                    <a href="{{ url_for('student.messages') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-envelope"></i> Messages
+                        <span class="badge bg-info float-end">{{ unread_messages|default(0) }}</span>
+                    </a>
+                    <a href="{{ url_for('student.reviews') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-star"></i> My Reviews
+                    </a>
+                    <a href="{{ url_for('student.profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user"></i> Profile Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <!-- Welcome Section -->
+            <div class="card shadow-sm mb-4 bg-primary text-white">
+                <div class="card-body">
+                    <h3>Welcome back, {{ current_user.full_name.split()[0] }}! 👋</h3>
+                    <p class="mb-0">Find your perfect student accommodation near campus.</p>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h6 class="text-muted">Properties Viewed</h6>
+                                    <h3>{{ properties_viewed|default(0) }}</h3>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <i class="fas fa-eye fa-2x text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h6 class="text-muted">Active Bookings</h6>
+                                    <h3>{{ active_bookings|default(0) }}</h3>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <i class="fas fa-calendar-check fa-2x text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h6 class="text-muted">Reviews Written</h6>
+                                    <h3>{{ reviews_count|default(0) }}</h3>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <i class="fas fa-star fa-2x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Bookings -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Recent Bookings</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_bookings %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Booking Date</th>
+                                        <th>Move In Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in recent_bookings %}
+                                    <tr>
+                                        <td>{{ booking.title }}</td>
+                                        <td>{{ booking.booking_date.strftime('%Y-%m-%d') if booking.booking_date else 'N/A' }}</td>
+                                        <td>{{ booking.move_in_date.strftime('%Y-%m-%d') if booking.move_in_date else 'Pending' }}</td>
+                                        <td>
+                                            {% if booking.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif booking.status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elif booking.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ booking.status }}</span>
+                                            {% endif %}
+                                        </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('property_detail', property_id=booking.property_id) }}" 
+                                               class="btn btn-sm btn-outline-primary">View Property</a>
+                                        </span>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar fa-3x text-muted mb-3"></i>
+                            <p>No bookings yet. Start exploring properties!</p>
+                            <a href="{{ url_for('search') }}" class="btn btn-primary">Browse Properties</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recommended Properties -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-thumbs-up"></i> Recommended for You</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for property in recommended %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                {% if property.primary_image %}
+                                    <img src="{{ property.primary_image }}" class="card-img-top" alt="{{ property.title }}" style="height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                        <i class="fas fa-home fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ property.title }}</h6>
+                                    <p class="text-muted small">
+                                        <i class="fas fa-map-marker-alt"></i> {{ property.location_area }}
+                                    </p>
+                                    <p class="fw-bold text-primary">KES {{ "{:,.0f}".format(property.monthly_rent) }}/month</p>
+                                    <a href="{{ url_for('property_detail', property_id=property.id) }}" 
+                                       class="btn btn-sm btn-outline-primary w-100">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-12 text-center py-4">
+                            <i class="fas fa-home fa-3x text-muted mb-3"></i>
+                            <p>No recommended properties at the moment. Check back soon!</p>
+                            <a href="{{ url_for('search') }}" class="btn btn-primary">Browse All Properties</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

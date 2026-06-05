@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Properties - UniStay{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('student.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('student.saved_properties') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-heart"></i> Saved Properties
+                    </a>
+                    <a href="{{ url_for('student.bookings') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-check"></i> My Bookings
+                    </a>
+                    <a href="{{ url_for('student.messages') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-envelope"></i> Messages
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-heart text-danger"></i> Saved Properties</h4>
+                </div>
+                <div class="card-body">
+                    {% if properties %}
+                        <div class="row">
+                            {% for property in properties %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 shadow-sm">
+                                    <img src="{{ property.images[0].media_url if property.images else 'https://via.placeholder.com/400x250' }}" 
+                                         class="card-img-top" alt="{{ property.title }}" style="height: 180px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ property.title }}</h5>
+                                        <p class="text-muted small">
+                                            <i class="fas fa-map-marker-alt"></i> {{ property.location_area }}
+                                        </p>
+                                        <p class="fw-bold text-primary">KES {{ "{:,.0f}".format(property.monthly_rent) }}/month</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ url_for('property_detail', property_id=property.id) }}" 
+                                               class="btn btn-primary btn-sm">View Details</a>
+                                            <a href="{{ url_for('student.remove_saved', property_id=property.id) }}" 
+                                               class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-trash"></i> Remove
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-heart-broken fa-4x text-muted mb-3"></i>
+                            <h4>No saved properties yet</h4>
+                            <p>Start exploring and save properties you like!</p>
+                            <a href="{{ url_for('search') }}" class="btn btn-primary">Browse Properties</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

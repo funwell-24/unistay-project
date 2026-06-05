@@ -1,0 +1,208 @@
+
+{% extends "base.html" %}
+
+{% block title %}Messages - UniStay{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('student.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('student.saved_properties') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart"></i> Saved Properties
+                    </a>
+                    <a href="{{ url_for('student.bookings') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-check"></i> My Bookings
+                    </a>
+                    <a href="{{ url_for('student.messages') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-envelope"></i> Messages
+                    </a>
+                    <a href="{{ url_for('student.profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user"></i> Profile Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-envelope"></i> Messages</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <!-- Conversations List -->
+                        <div class="col-md-4 border-end" style="height: 500px; overflow-y: auto;">
+                            <div id="conversationsList" class="list-group list-group-flush">
+                                <div class="text-center p-3 text-muted">Loading conversations...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Area -->
+                        <div class="col-md-8">
+                            <div id="chatArea" class="d-flex flex-column" style="height: 500px;">
+                                <div class="bg-light p-3 border-bottom" id="chatHeader">
+                                    <h6 class="mb-0">Select a conversation to start messaging</h6>
+                                </div>
+                                <div id="messagesArea" class="flex-grow-1 p-3" style="overflow-y: auto;">
+                                    <div class="text-center text-muted mt-5">
+                                        <i class="fas fa-comments fa-3x mb-3"></i>
+                                        <p>Select a conversation from the left to view messages</p>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-top" id="messageInputArea" style="display: none;">
+                                    <div class="input-group">
+                                        <input type="text" id="messageInput" class="form-control" placeholder="Type your message...">
+                                        <button class="btn btn-primary" onclick="sendMessage()">
+                                            <i class="fas fa-paper-plane"></i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentReceiverId = null;
+let currentReceiverName = '';
+
+// Load conversations on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadConversations();
+});
+
+function loadConversations() {
+    fetch('/api/conversations')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('conversationsList');
+            if (data.success && data.conversations.length > 0) {
+                let html = '';
+                data.conversations.forEach(conv => {
+                    const unreadBadge = conv.unread_count > 0 ? `<span class="badge bg-danger ms-2">${conv.unread_count}</span>` : '';
+                    html += `
+                        <a href="#" class="list-group-item list-group-item-action" onclick="loadConversation(${conv.user_id}, '${conv.user_name.replace(/'/g, "\\'")}'); return false;">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">${conv.user_name} ${unreadBadge}</h6>
+                                    <small class="text-muted">${conv.last_message ? conv.last_message.substring(0, 50) : 'No messages yet'}</small>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div class="text-center p-3 text-muted">No conversations yet</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('conversationsList').innerHTML = '<div class="text-center p-3 text-danger">Error loading conversations</div>';
+        });
+}
+
+function loadConversation(userId, userName) {
+    currentReceiverId = userId;
+    currentReceiverName = userName;
+    
+    document.getElementById('chatHeader').innerHTML = `<h6 class="mb-0">Chat with ${userName}</h6>`;
+    document.getElementById('messageInputArea').style.display = 'block';
+    
+    // Load messages
+    fetch(`/api/messages/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            const messagesArea = document.getElementById('messagesArea');
+            if (data.success && data.messages.length > 0) {
+                messagesArea.innerHTML = '';
+                data.messages.forEach(msg => {
+                    const isSender = msg.sender_id === {{ current_user.id }};
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `d-flex ${isSender ? 'justify-content-end' : 'justify-content-start'} mb-3`;
+                    messageDiv.innerHTML = `
+                        <div class="${isSender ? 'bg-primary text-white' : 'bg-light'} p-2 rounded" style="max-width: 70%;">
+                            <small class="d-block">${escapeHtml(msg.message)}</small>
+                            <small class="${isSender ? 'text-white-50' : 'text-muted'}" style="font-size: 10px;">
+                                ${msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : ''}
+                            </small>
+                        </div>
+                    `;
+                    messagesArea.appendChild(messageDiv);
+                });
+            } else {
+                messagesArea.innerHTML = '<div class="text-center text-muted">No messages yet. Start the conversation!</div>';
+            }
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('messagesArea').innerHTML = '<div class="text-center text-danger">Error loading messages</div>';
+        });
+}
+
+function sendMessage() {
+    if (!currentReceiverId) {
+        alert('Please select a conversation first');
+        return;
+    }
+    
+    const message = document.getElementById('messageInput').value;
+    if (!message.trim()) return;
+    
+    fetch('/api/send-message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            receiver_id: currentReceiverId,
+            message: message.trim()
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('messageInput').value = '';
+            loadConversation(currentReceiverId, currentReceiverName);
+        } else {
+            alert('Error sending message: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending message');
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Auto-refresh conversations every 10 seconds
+setInterval(() => {
+    if (!document.hidden) {
+        loadConversations();
+        if (currentReceiverId) {
+            loadConversation(currentReceiverId, currentReceiverName);
+        }
+    }
+}, 10000);
+</script>
+{% endblock %}

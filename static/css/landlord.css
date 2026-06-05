@@ -1,0 +1,254 @@
+/* static/css/landlord.css */
+/* Landlord Dashboard Specific Styles */
+
+/* Property Management */
+.property-management {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.property-list-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    transition: var(--transition);
+}
+
+.property-list-item:hover {
+    background: var(--gray-100);
+}
+
+.property-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.property-status.available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.property-status.occupied {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.property-status.reserved {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Booking Requests */
+.booking-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+}
+
+.booking-card.pending {
+    border-left-color: var(--warning-color);
+}
+
+.booking-card.approved {
+    border-left-color: var(--success-color);
+}
+
+.booking-card.rejected {
+    border-left-color: var(--danger-color);
+}
+
+.booking-student-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.student-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Add Property Form */
+.property-form-section {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Image Upload */
+.image-upload-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.image-upload-area:hover {
+    border-color: var(--primary-color);
+    background: var(--gray-100);
+}
+
+.image-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.preview-image {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+}
+
+.preview-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-image .remove-image {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+/* Analytics Dashboard */
+.analytics-widget {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.widget-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    letter-spacing: 1px;
+}
+
+.widget-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+}
+
+.widget-change {
+    font-size: 0.8rem;
+}
+
+.widget-change.positive {
+    color: var(--success-color);
+}
+
+.widget-change.negative {
+    color: var(--danger-color);
+}
+
+/* Subscription Plans */
+.plan-card {
+    text-align: center;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    background: white;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.plan-card:hover {
+    transform: translateY(-10px);
+}
+
+.plan-card.popular {
+    border: 2px solid var(--primary-color);
+    transform: scale(1.05);
+}
+
+.plan-badge {
+    position: absolute;
+    top: 10px;
+    right: -30px;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 2rem;
+    transform: rotate(45deg);
+    font-size: 0.75rem;
+}
+
+.plan-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 1rem 0;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.plan-features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .amenities-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .plan-card.popular {
+        transform: scale(1);
+    }
+    
+    .booking-actions {
+        flex-direction: column;
+    }
+}

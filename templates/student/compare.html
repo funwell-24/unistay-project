@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Properties - UniStay{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Compare Properties</h2>
+    
+    {% if properties|length >= 2 %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 200px;">Feature</th>
+                        {% for property in properties %}
+                        <th>
+                            {{ property.title }}
+                            <button class="btn btn-sm btn-danger float-end" onclick="removeProperty({{ property.id }})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Image</strong></td>
+                        {% for property in properties %}
+                        <td>
+                            <img src="{{ property.images[0].media_url if property.images else 'https://via.placeholder.com/200x150' }}" 
+                                 class="img-fluid rounded" style="max-height: 150px;">
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Price (Monthly)</strong></td>
+                        {% for property in properties %}
+                        <td class="fw-bold text-primary">KES {{ "{:,.0f}".format(property.monthly_rent) }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        {% for property in properties %}
+                        <td>{{ property.location_area }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Distance from Campus</strong></td>
+                        {% for property in properties %}
+                        <td>{{ property.distance_from_campus }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Property Type</strong></td>
+                        {% for property in properties %}
+                        <td>{{ property.property_type.replace('_', ' ').title() }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Deposit</strong></td>
+                        {% for property in properties %}
+                        <td>KES {{ "{:,.0f}".format(property.deposit_amount or 0) }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Available Units</strong></td>
+                        {% for property in properties %}
+                        <td>{{ property.available_units }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Security</strong></td>
+                        {% for property in properties %}
+                        <td>
+                            {% if property.has_security_guards %}
+                                <i class="fas fa-check-circle text-success"></i> Security Guards<br>
+                            {% endif %}
+                            {% if property.has_cctv %}
+                                <i class="fas fa-check-circle text-success"></i> CCTV<br>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Utilities</strong></td>
+                        {% for property in properties %}
+                        <td>
+                            {% if property.has_water %}
+                                <i class="fas fa-check-circle text-success"></i> Water<br>
+                            {% endif %}
+                            {% if property.has_electricity %}
+                                <i class="fas fa-check-circle text-success"></i> Electricity<br>
+                            {% endif %}
+                            {% if property.has_wifi %}
+                                <i class="fas fa-check-circle text-success"></i> WiFi<br>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Parking</strong></td>
+                        {% for property in properties %}
+                        <td>
+                            {% if property.has_car_parking %}
+                                <i class="fas fa-check-circle text-success"></i> Car Parking<br>
+                            {% endif %}
+                            {% if property.has_motorcycle_parking %}
+                                <i class="fas fa-check-circle text-success"></i> Motorcycle Parking
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Rating</strong></td>
+                        {% for property in properties %}
+                        <td>
+                            {% if property.avg_rating %}
+                                <div class="text-warning">
+                                    {% for i in range(property.avg_rating|int) %}
+                                        <i class="fas fa-star"></i>
+                                    {% endfor %}
+                                </div>
+                                <small>({{ property.review_count }} reviews)</small>
+                            {% else %}
+                                No reviews yet
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Actions</strong></td>
+                        {% for property in properties %}
+                        <td>
+                            <a href="{{ url_for('property_detail', property_id=property.id) }}" class="btn btn-primary btn-sm w-100 mb-1">
+                                View Details
+                            </a>
+                            <button class="btn btn-success btn-sm w-100" onclick="bookProperty({{ property.id }})">
+                                Book Now
+                            </button>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('search') }}" class="btn btn-outline-primary">
+                <i class="fas fa-plus"></i> Add More Properties
+            </a>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <h4>Select at least 2 properties to compare</h4>
+            <p>Browse properties and click "Compare" to add them here</p>
+            <a href="{{ url_for('search') }}" class="btn btn-primary">Browse Properties</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function removeProperty(propertyId) {
+    let compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+    compareList = compareList.filter(id => id != propertyId);
+    localStorage.setItem('compareList', JSON.stringify(compareList));
+    location.reload();
+}
+
+function bookProperty(propertyId) {
+    window.location.href = `/property/${propertyId}#bookModal`;
+}
+</script>
+{% endblock %}
