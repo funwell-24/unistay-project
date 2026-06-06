@@ -9,13 +9,11 @@ class Config:
     # Flask Configuration
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # MySQL Configuration
-    MYSQL_HOST = os.environ.get('MYSQL_HOST') or 'localhost'
-    MYSQL_USER = os.environ.get('MYSQL_USER') or 'root'
-    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or 'root123'  # Changed to root123
-    MYSQL_DB = os.environ.get('MYSQL_DB') or 'unistay'
-    MYSQL_PORT = int(os.environ.get('MYSQL_PORT') or 3306)
-    
+    MYSQL_HOST = os.environ.get('MYSQL_HOST')
+    MYSQL_USER = os.environ.get('MYSQL_USER')
+    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD')
+    MYSQL_DB = os.environ.get('MYSQL_DB')
+    MYSQL_PORT = int(os.environ.get('MYSQL_PORT', 3306))
     # Database connection string for SQLAlchemy
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
