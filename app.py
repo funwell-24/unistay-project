@@ -18,6 +18,7 @@ def get_db_connection():
     try:
         connection = pymysql.connect(
             host=app.config['MYSQL_HOST'],
+            port=app.config['MYSQL_PORT'],   # ✅ REQUIRED FIX
             user=app.config['MYSQL_USER'],
             password=app.config['MYSQL_PASSWORD'],
             database=app.config['MYSQL_DB'],
@@ -28,7 +29,6 @@ def get_db_connection():
     except Exception as e:
         print(f"Database connection error: {e}")
         return None
-
 # Import blueprints
 from blueprints.auth import auth_bp
 from blueprints.student import student_bp
